@@ -1,5 +1,5 @@
-import { createApp } from './app.js';
 import { config } from './config/env.js';
+import { createApp } from './app.js';
 import { connectDatabase, disconnectDatabase } from './config/database.js';
 
 async function startServer() {

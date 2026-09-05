@@ -6,6 +6,29 @@ import {
 import { MockPaymentGateway } from './MockPaymentGateway.js';
 import { config } from '../../config/env.js';
 
+/**
+ * Sanitizes customer contact numbers for Razorpay Sandbox compatibility.
+ * Rejects numbers with recurring digits (e.g. 9999999999) or invalid lengths,
+ * falling back to the standard non-recurring test sequence (+919876543210).
+ */
+export function sanitizeCustomerContact(contact?: string): string {
+  if (!contact || typeof contact !== 'string') {
+    return '+919876543210';
+  }
+
+  const trimmed = contact.trim();
+  const digitsOnly = trimmed.replace(/\D/g, '');
+  const last10 = digitsOnly.slice(-10);
+
+  // Reject invalid length, all identical digits, or >= 6 consecutive recurring digits
+  const hasRecurringDigits = /(\d)\1{5,}/.test(last10);
+  if (last10.length !== 10 || hasRecurringDigits || /^0+$/.test(last10)) {
+    return '+919876543210';
+  }
+
+  return trimmed.startsWith('+') ? trimmed : `+91${last10}`;
+}
+
 export class RazorpaySandboxAdapter implements PaymentGatewayAdapter {
   public name = 'RazorpaySandboxAdapter';
   private fallback: MockPaymentGateway;
@@ -52,7 +75,7 @@ export class RazorpaySandboxAdapter implements PaymentGatewayAdapter {
         customer: {
           name: 'RecoverAI Customer',
           email: customerDetails.email || 'customer@example.com',
-          contact: customerDetails.contact || '+919999999999',
+          contact: sanitizeCustomerContact(customerDetails.contact),
         },
         notify: {
           sms: true,

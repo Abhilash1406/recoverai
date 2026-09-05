@@ -32,7 +32,7 @@ webhooksRouter.post('/razorpay', async (req: Request, res: Response, next: NextF
 
     // 2. Verify X-Razorpay-Signature header
     const signature = req.headers['x-razorpay-signature'] as string | undefined;
-    const webhookSecret = config.razorpayWebhookSecret || process.env['RAZORPAY_WEBHOOK_SECRET'];
+    const webhookSecret = process.env['RAZORPAY_WEBHOOK_SECRET'] || config.razorpayWebhookSecret;
 
     const isValidSignature = RazorpayWebhookVerifier.verifySignature(rawBody, signature, webhookSecret);
     if (!isValidSignature) {
@@ -102,6 +102,8 @@ webhooksRouter.post('/razorpay', async (req: Request, res: Response, next: NextF
           errorSource: paymentEntity.error_source,
           errorReason: paymentEntity.error_reason,
           errorDescription: paymentEntity.error_description,
+          customerEmail: paymentEntity.email,
+          customerContact: paymentEntity.contact,
         },
       };
 

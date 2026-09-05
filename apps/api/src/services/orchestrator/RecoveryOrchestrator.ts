@@ -17,6 +17,7 @@ import { evaluatePolicy, HIGH_RISK_THRESHOLD, MAX_AUTOMATIC_ACTIONS } from '@rec
 import { dataStore } from '../store.js';
 import { PaymentGatewayAdapter } from '../payment/PaymentGatewayAdapter.js';
 import { getPaymentGateway } from '../payment/GatewayFactory.js';
+import { sanitizeCustomerContact } from '../payment/RazorpaySandboxAdapter.js';
 import { notificationService } from '../notification/NotificationService.js';
 import { geminiAgentService } from '../ai/GeminiAgent.js';
 
@@ -387,11 +388,16 @@ export class RecoveryOrchestrator {
         });
       }
     } else if (action === RecoveryAction.PAYMENT_LINK) {
+      const txn = await dataStore.getTransaction(recCase.transactionId);
+      const customerEmail = (txn?.metadata?.customerEmail as string) || 'customer@example.com';
+      const rawContact = (txn?.metadata?.customerContact as string) || undefined;
+      const customerContact = sanitizeCustomerContact(rawContact);
+
       const linkResult = await this.paymentGateway.createPaymentLink(
         recCase.transactionId,
         recCase.amount,
         `Payment Recovery for ${recCase.transactionId}`,
-        { email: 'customer@example.com' },
+        { email: customerEmail, contact: customerContact },
       );
 
       const notif = await notificationService.sendNotification({

@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import { createApp } from '../src/app.js';
 import { dataStore } from '../src/services/store.js';
 import { RazorpayFailureMapper } from '../src/services/payment/RazorpayFailureMapper.js';
-import { RazorpaySandboxAdapter } from '../src/services/payment/RazorpaySandboxAdapter.js';
+import { RazorpaySandboxAdapter, sanitizeCustomerContact } from '../src/services/payment/RazorpaySandboxAdapter.js';
 import { MockPaymentGateway } from '../src/services/payment/MockPaymentGateway.js';
 import { getPaymentGateway } from '../src/services/payment/GatewayFactory.js';
 import {
@@ -582,16 +582,77 @@ describe('Phase 5B — Razorpay Sandbox Integration Tests', () => {
     });
 
     it('O. explicit mock mode and unconfigured credentials use MockPaymentGateway safely', async () => {
-      const gateway = getPaymentGateway();
-      expect(gateway.name).toBe('MockPaymentGateway');
+      const originalMode = process.env['GATEWAY_MODE'];
+      process.env['GATEWAY_MODE'] = 'MOCK';
+      try {
+        const gateway = getPaymentGateway();
+        expect(gateway.name).toBe('MockPaymentGateway');
 
-      const link = await gateway.createPaymentLink('txn_mock_safe', 5000, 'Test', {});
-      expect(link.status).toBe('created');
-      expect(link.shortUrl).toContain('mock');
+        const link = await gateway.createPaymentLink('txn_mock_safe', 5000, 'Test', {});
+        expect(link.status).toBe('created');
+        expect(link.shortUrl).toContain('mock');
 
-      const retry = await gateway.retryPayment('txn_mock_safe', 5000, 'upi');
-      expect(retry.status).toBe('captured');
-      expect(retry.amountRecovered).toBe(5000);
+        const retry = await gateway.retryPayment('txn_mock_safe', 5000, 'upi');
+        expect(retry.status).toBe('captured');
+        expect(retry.amountRecovered).toBe(5000);
+      } finally {
+        if (originalMode !== undefined) {
+          process.env['GATEWAY_MODE'] = originalMode;
+        } else {
+          delete process.env['GATEWAY_MODE'];
+        }
+      }
+    });
+  });
+
+  // ===========================================================================
+  // Q. Customer Contact Sanitization for Razorpay Sandbox
+  // ===========================================================================
+  describe('Q. Customer Contact Sanitization for Razorpay Sandbox', () => {
+    it('sanitizes undefined and recurring digits to valid non-recurring sandbox contact', () => {
+      expect(sanitizeCustomerContact(undefined)).toBe('+919876543210');
+      expect(sanitizeCustomerContact('')).toBe('+919876543210');
+      expect(sanitizeCustomerContact('+919999999999')).toBe('+919876543210');
+      expect(sanitizeCustomerContact('9999999999')).toBe('+919876543210');
+      expect(sanitizeCustomerContact('1111111111')).toBe('+919876543210');
+      expect(sanitizeCustomerContact('+919999991234')).toBe('+919876543210');
+    });
+
+    it('preserves valid non-recurring phone numbers', () => {
+      expect(sanitizeCustomerContact('+919820098200')).toBe('+919820098200');
+      expect(sanitizeCustomerContact('+919876543210')).toBe('+919876543210');
+      expect(sanitizeCustomerContact('9820098200')).toBe('+919820098200');
+    });
+
+    it('supplies sanitized contact in Razorpay createPaymentLink payload', async () => {
+      const adapter = new RazorpaySandboxAdapter('rzp_test_key', 'rzp_test_secret');
+      let capturedBody: any = null;
+
+      global.fetch = vi.fn().mockImplementation(async (_url, options) => {
+        capturedBody = JSON.parse(options.body);
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            id: 'plink_test_sanitized',
+            short_url: 'https://rzp.io/i/test_sanitized',
+            status: 'created',
+            amount: 50000,
+            currency: 'INR',
+          }),
+        };
+      });
+
+      // Pass recurring contact
+      const res = await adapter.createPaymentLink('txn_test_contact', 50000, 'Test Desc', {
+        email: 'test@example.com',
+        contact: '+919999999999',
+      });
+
+      expect(res.paymentLinkId).toBe('plink_test_sanitized');
+      expect(capturedBody).toBeDefined();
+      expect(capturedBody.customer.contact).toBe('+919876543210');
+      expect(capturedBody.customer.contact).not.toContain('9999999999');
     });
   });
 });
