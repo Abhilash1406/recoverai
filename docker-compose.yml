@@ -1,0 +1,62 @@
+# =============================================================================
+# docker-compose.yml — RecoverAI
+# Phase 1: Foundation only — services are defined but commented out
+#          until their dependencies are implemented.
+# =============================================================================
+# To use in later phases, uncomment the relevant services.
+# =============================================================================
+
+version: '3.9'
+
+services:
+
+  # ── API (Phase 2+) ──────────────────────────────────────────────────────────
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.api
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - PORT=5000
+  #     - MONGODB_URI=mongodb://mongodb:27017/recoverai
+  #   depends_on:
+  #     - mongodb
+  #   restart: unless-stopped
+
+  # ── Web (Phase 2+) ──────────────────────────────────────────────────────────
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.web
+  #   ports:
+  #     - "80:80"
+  #   depends_on:
+  #     - api
+  #   restart: unless-stopped
+
+  # ── MongoDB (Phase 2+) ──────────────────────────────────────────────────────
+  # mongodb:
+  #   image: mongo:7.0
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #   environment:
+  #     - MONGO_INITDB_DATABASE=recoverai
+  #   restart: unless-stopped
+
+  # ── ML Inference Server (Phase 4+) ──────────────────────────────────────────
+  # ml:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile.ml
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./ml/models:/app/models:ro
+  #   restart: unless-stopped
+
+# volumes:
+#   mongodb_data:

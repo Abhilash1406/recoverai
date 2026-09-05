@@ -1,0 +1,94 @@
+{
+  "pipeline_id": "ml_pipe_seed42_20260831T170819",
+  "seed": 42,
+  "n_transactions": 500,
+  "timestamp": "2026-08-31T17:08:19.576902+00:00",
+  "risk_model": {
+    "selected_type": "logistic_regression",
+    "candidate_val_metrics": {
+      "logistic_regression": {
+        "roc_auc": 0.5,
+        "pr_auc": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "brier_score": 0.0,
+        "log_loss": 0.000235
+      },
+      "random_forest": {
+        "roc_auc": 0.5,
+        "pr_auc": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "brier_score": 0.00016,
+        "log_loss": 0.005149
+      },
+      "gradient_boosting": {
+        "roc_auc": 0.5,
+        "pr_auc": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "brier_score": 0.0,
+        "log_loss": 1e-06
+      }
+    },
+    "test_metrics": {
+      "roc_auc": 1.0,
+      "pr_auc": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "brier_score": 7e-06,
+      "log_loss": 0.000528
+    }
+  },
+  "recovery_model": {
+    "selected_type": "random_forest",
+    "calibrated": true,
+    "calibration_method": "isotonic",
+    "candidate_val_metrics": {
+      "logistic_regression": {
+        "roc_auc": 0.841738,
+        "pr_auc": 0.695372,
+        "precision": 0.646341,
+        "recall": 0.576087,
+        "f1": 0.609195,
+        "brier_score": 0.146955,
+        "log_loss": 0.655892,
+        "ece": 0.061696
+      },
+      "random_forest": {
+        "roc_auc": 0.859898,
+        "pr_auc": 0.740914,
+        "precision": 0.647727,
+        "recall": 0.619565,
+        "f1": 0.633333,
+        "brier_score": 0.135589,
+        "log_loss": 0.419367,
+        "ece": 0.067619
+      },
+      "gradient_boosting": {
+        "roc_auc": 0.854045,
+        "pr_auc": 0.721981,
+        "precision": 0.697368,
+        "recall": 0.576087,
+        "f1": 0.630952,
+        "brier_score": 0.140906,
+        "log_loss": 0.426694,
+        "ece": 0.032642
+      }
+    },
+    "test_metrics": {
+      "roc_auc": 0.854014,
+      "pr_auc": 0.69228,
+      "precision": 0.655556,
+      "recall": 0.648352,
+      "f1": 0.651934,
+      "brier_score": 0.141228,
+      "log_loss": 0.423904,
+      "ece": 0.052088
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@recoverai/shared-types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types, enums, and interfaces for RecoverAI",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "echo 'No tests yet for shared-types'"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@recoverai/decision-engine",
+  "version": "1.0.0",
+  "description": "RecoverAI Decision Engine — placeholder for Phase 3+",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "test": "echo 'Decision engine has no tests yet (Phase 3+)'"
+  },
+  "dependencies": {
+    "@recoverai/shared-types": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

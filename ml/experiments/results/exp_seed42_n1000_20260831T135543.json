@@ -1,0 +1,142 @@
+{
+  "experiment_id": "exp_seed42_n1000_20260831T135543",
+  "seed": 42,
+  "dataset_size": 1000,
+  "dataset_hash": "57eec3b3f6ae3208127878c7dd0320e29fbb182984c7ae813b8c785c85dd2b83",
+  "config_snapshot": {
+    "MAX_AUTOMATIC_ACTIONS": 2,
+    "MAX_RETRIES": 2,
+    "HIGH_RISK_THRESHOLD": 0.7,
+    "MIN_RECOVERY_PROBABILITY": 0.6,
+    "RISK_COST_MULTIPLIER": 0.05,
+    "ACTION_COSTS": {
+      "WAIT": 0.0,
+      "RETRY": 0.5,
+      "PAYMENT_LINK": 1.0,
+      "NOTIFICATION": 0.3,
+      "MERCHANT_REVIEW": 2.0,
+      "STOP": 0.0
+    },
+    "FRICTION_SCORES": {
+      "WAIT": 0.0,
+      "RETRY": 1.0,
+      "NOTIFICATION": 2.0,
+      "PAYMENT_LINK": 3.0,
+      "MERCHANT_REVIEW": 5.0,
+      "STOP": 0.0
+    }
+  },
+  "strategy_results": [
+    {
+      "strategy_name": "AlwaysRetry",
+      "dataset_hash": "57eec3b3f6ae3208127878c7dd0320e29fbb182984c7ae813b8c785c85dd2b83",
+      "metrics": {
+        "total_transactions": 1000,
+        "successful_recoveries": 308,
+        "failed_recoveries": 0,
+        "blocked_transactions": 74,
+        "stopped_transactions": 618,
+        "merchant_review_transactions": 0,
+        "revenue_at_risk": 16250634.61,
+        "eligible_revenue": 15612003.88,
+        "recovered_revenue": 9056301.73,
+        "recovery_rate": 0.332613,
+        "revenue_recovery_efficiency": 0.580086,
+        "average_recovery_attempts": 0.38,
+        "total_attempts": 380,
+        "total_friction_cost": 380.0,
+        "total_action_cost": 190.0,
+        "total_risk_cost": 73709.074,
+        "safety_violation_count": 0,
+        "safety_violation_rate": 0.0,
+        "net_recovery_value": 8982022.656,
+        "average_time_to_recovery_hours": 0.3133
+      },
+      "outcome_count": 1000
+    },
+    {
+      "strategy_name": "AlwaysPaymentLink",
+      "dataset_hash": "57eec3b3f6ae3208127878c7dd0320e29fbb182984c7ae813b8c785c85dd2b83",
+      "metrics": {
+        "total_transactions": 1000,
+        "successful_recoveries": 282,
+        "failed_recoveries": 0,
+        "blocked_transactions": 74,
+        "stopped_transactions": 644,
+        "merchant_review_transactions": 0,
+        "revenue_at_risk": 16250634.61,
+        "eligible_revenue": 15612003.88,
+        "recovered_revenue": 7138011.47,
+        "recovery_rate": 0.304536,
+        "revenue_recovery_efficiency": 0.457213,
+        "average_recovery_attempts": 0.389,
+        "total_attempts": 389,
+        "total_friction_cost": 1167.0,
+        "total_action_cost": 389.0,
+        "total_risk_cost": 73709.074,
+        "safety_violation_count": 0,
+        "safety_violation_rate": 0.0,
+        "net_recovery_value": 7062746.396,
+        "average_time_to_recovery_hours": 3.2145
+      },
+      "outcome_count": 1000
+    },
+    {
+      "strategy_name": "RuleBased",
+      "dataset_hash": "57eec3b3f6ae3208127878c7dd0320e29fbb182984c7ae813b8c785c85dd2b83",
+      "metrics": {
+        "total_transactions": 1000,
+        "successful_recoveries": 514,
+        "failed_recoveries": 0,
+        "blocked_transactions": 74,
+        "stopped_transactions": 405,
+        "merchant_review_transactions": 7,
+        "revenue_at_risk": 16250634.61,
+        "eligible_revenue": 15612003.88,
+        "recovered_revenue": 12316610.57,
+        "recovery_rate": 0.555076,
+        "revenue_recovery_efficiency": 0.788919,
+        "average_recovery_attempts": 0.651,
+        "total_attempts": 651,
+        "total_friction_cost": 1219.0,
+        "total_action_cost": 471.0,
+        "total_risk_cost": 73709.074,
+        "safety_violation_count": 0,
+        "safety_violation_rate": 0.0,
+        "net_recovery_value": 12241211.496,
+        "average_time_to_recovery_hours": 1.585
+      },
+      "outcome_count": 1000
+    },
+    {
+      "strategy_name": "RecoverAI",
+      "dataset_hash": "57eec3b3f6ae3208127878c7dd0320e29fbb182984c7ae813b8c785c85dd2b83",
+      "metrics": {
+        "total_transactions": 1000,
+        "successful_recoveries": 0,
+        "failed_recoveries": 0,
+        "blocked_transactions": 74,
+        "stopped_transactions": 926,
+        "merchant_review_transactions": 0,
+        "revenue_at_risk": 16250634.61,
+        "eligible_revenue": 15612003.88,
+        "recovered_revenue": 0.0,
+        "recovery_rate": 0.0,
+        "revenue_recovery_efficiency": 0.0,
+        "average_recovery_attempts": 0.0,
+        "total_attempts": 0,
+        "total_friction_cost": 0.0,
+        "total_action_cost": 0.0,
+        "total_risk_cost": 73709.074,
+        "safety_violation_count": 0,
+        "safety_violation_rate": 0.0,
+        "net_recovery_value": -73709.074,
+        "average_time_to_recovery_hours": 0.0
+      },
+      "outcome_count": 1000
+    }
+  ],
+  "generated_at": "2026-08-31T13:55:43.989373+00:00",
+  "disclaimer": "The simulation environment is a synthetic research environment and does not represent real Razorpay production behavior. All transaction amounts, costs, and metrics are simulation parameters only.",
+  "cost_disclaimer": "Action costs and friction scores are simulation parameters (not real Razorpay costs). Risk cost formula: risk_score \u00d7 amount \u00d7 0.05. All values are assumptions for fair comparative evaluation."
+}

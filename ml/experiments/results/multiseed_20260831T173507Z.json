@@ -1,0 +1,548 @@
+{
+  "report_type": "multi_seed",
+  "seeds": [
+    42,
+    123,
+    456,
+    789,
+    1001
+  ],
+  "dataset_size": 1000,
+  "generated_at": "2026-08-31T17:35:07.758972+00:00",
+  "disclaimer": "The simulation environment is a synthetic research environment and does not represent real Razorpay production behavior. All transaction amounts, costs, and metrics are simulation parameters only.",
+  "cost_disclaimer": "Action costs and friction scores are simulation parameters (not real Razorpay costs). Risk cost formula: risk_score \u00d7 amount \u00d7 0.05. All values are assumptions for fair comparative evaluation.",
+  "strategies": [
+    {
+      "strategy_name": "AlwaysRetry",
+      "seeds": [
+        42,
+        123,
+        456,
+        789,
+        1001
+      ],
+      "dataset_size": 1000,
+      "aggregate_stats": {
+        "total_transactions": {
+          "mean": 1000.0,
+          "std_dev": 0.0,
+          "min": 1000.0,
+          "max": 1000.0
+        },
+        "successful_recoveries": {
+          "mean": 320.2,
+          "std_dev": 7.694154,
+          "min": 308.0,
+          "max": 327.0
+        },
+        "failed_recoveries": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "blocked_transactions": {
+          "mean": 74.2,
+          "std_dev": 5.069517,
+          "min": 68.0,
+          "max": 81.0
+        },
+        "stopped_transactions": {
+          "mean": 605.4,
+          "std_dev": 10.549882,
+          "min": 593.0,
+          "max": 618.0
+        },
+        "merchant_review_transactions": {
+          "mean": 0.2,
+          "std_dev": 0.447214,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "revenue_at_risk": {
+          "mean": 15425538.29,
+          "std_dev": 582482.657853,
+          "min": 14780543.1,
+          "max": 16250634.61
+        },
+        "eligible_revenue": {
+          "mean": 14677729.838,
+          "std_dev": 670433.003422,
+          "min": 13818789.19,
+          "max": 15612003.88
+        },
+        "recovered_revenue": {
+          "mean": 8410365.286,
+          "std_dev": 492153.581205,
+          "min": 7858753.19,
+          "max": 9056301.73
+        },
+        "recovery_rate": {
+          "mean": 0.345885,
+          "std_dev": 0.009191,
+          "min": 0.332613,
+          "max": 0.354733
+        },
+        "revenue_recovery_efficiency": {
+          "mean": 0.57276,
+          "std_dev": 0.009613,
+          "min": 0.557863,
+          "max": 0.580807
+        },
+        "average_recovery_attempts": {
+          "mean": 0.3802,
+          "std_dev": 0.009365,
+          "min": 0.37,
+          "max": 0.395
+        },
+        "total_attempts": {
+          "mean": 380.2,
+          "std_dev": 9.364828,
+          "min": 370.0,
+          "max": 395.0
+        },
+        "total_friction_cost": {
+          "mean": 380.2,
+          "std_dev": 9.364828,
+          "min": 370.0,
+          "max": 395.0
+        },
+        "total_action_cost": {
+          "mean": 190.1,
+          "std_dev": 4.682414,
+          "min": 185.0,
+          "max": 197.5
+        },
+        "total_risk_cost": {
+          "mean": 69416.90862,
+          "std_dev": 4455.708753,
+          "min": 64141.7211,
+          "max": 73709.074
+        },
+        "safety_violation_count": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "safety_violation_rate": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "net_recovery_value": {
+          "mean": 8340378.07738,
+          "std_dev": 487916.345289,
+          "min": 7793092.5871,
+          "max": 8982022.656
+        },
+        "average_time_to_recovery_hours": {
+          "mean": 0.31086,
+          "std_dev": 0.005885,
+          "min": 0.3027,
+          "max": 0.3185
+        }
+      }
+    },
+    {
+      "strategy_name": "AlwaysPaymentLink",
+      "seeds": [
+        42,
+        123,
+        456,
+        789,
+        1001
+      ],
+      "dataset_size": 1000,
+      "aggregate_stats": {
+        "total_transactions": {
+          "mean": 1000.0,
+          "std_dev": 0.0,
+          "min": 1000.0,
+          "max": 1000.0
+        },
+        "successful_recoveries": {
+          "mean": 271.8,
+          "std_dev": 10.232302,
+          "min": 257.0,
+          "max": 282.0
+        },
+        "failed_recoveries": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "blocked_transactions": {
+          "mean": 74.2,
+          "std_dev": 5.069517,
+          "min": 68.0,
+          "max": 81.0
+        },
+        "stopped_transactions": {
+          "mean": 653.8,
+          "std_dev": 7.362065,
+          "min": 644.0,
+          "max": 662.0
+        },
+        "merchant_review_transactions": {
+          "mean": 0.2,
+          "std_dev": 0.447214,
+          "min": 0.0,
+          "max": 1.0
+        },
+        "revenue_at_risk": {
+          "mean": 15425538.29,
+          "std_dev": 582482.657853,
+          "min": 14780543.1,
+          "max": 16250634.61
+        },
+        "eligible_revenue": {
+          "mean": 14677729.838,
+          "std_dev": 670433.003422,
+          "min": 13818789.19,
+          "max": 15612003.88
+        },
+        "recovered_revenue": {
+          "mean": 6366655.638,
+          "std_dev": 560877.513268,
+          "min": 5749560.94,
+          "max": 7138011.47
+        },
+        "recovery_rate": {
+          "mean": 0.293555,
+          "std_dev": 0.009925,
+          "min": 0.279652,
+          "max": 0.304536
+        },
+        "revenue_recovery_efficiency": {
+          "mean": 0.433536,
+          "std_dev": 0.028497,
+          "min": 0.404338,
+          "max": 0.470188
+        },
+        "average_recovery_attempts": {
+          "mean": 0.372,
+          "std_dev": 0.018371,
+          "min": 0.348,
+          "max": 0.389
+        },
+        "total_attempts": {
+          "mean": 372.0,
+          "std_dev": 18.371173,
+          "min": 348.0,
+          "max": 389.0
+        },
+        "total_friction_cost": {
+          "mean": 1116.0,
+          "std_dev": 55.113519,
+          "min": 1044.0,
+          "max": 1167.0
+        },
+        "total_action_cost": {
+          "mean": 372.0,
+          "std_dev": 18.371173,
+          "min": 348.0,
+          "max": 389.0
+        },
+        "total_risk_cost": {
+          "mean": 69416.90862,
+          "std_dev": 4455.708753,
+          "min": 64141.7211,
+          "max": 73709.074
+        },
+        "safety_violation_count": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "safety_violation_rate": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "net_recovery_value": {
+          "mean": 6295750.72938,
+          "std_dev": 559634.867741,
+          "min": 5683064.8371,
+          "max": 7062746.396
+        },
+        "average_time_to_recovery_hours": {
+          "mean": 3.33294,
+          "std_dev": 0.091482,
+          "min": 3.2145,
+          "max": 3.4608
+        }
+      }
+    },
+    {
+      "strategy_name": "RuleBased",
+      "seeds": [
+        42,
+        123,
+        456,
+        789,
+        1001
+      ],
+      "dataset_size": 1000,
+      "aggregate_stats": {
+        "total_transactions": {
+          "mean": 1000.0,
+          "std_dev": 0.0,
+          "min": 1000.0,
+          "max": 1000.0
+        },
+        "successful_recoveries": {
+          "mean": 506.4,
+          "std_dev": 9.736529,
+          "min": 493.0,
+          "max": 514.0
+        },
+        "failed_recoveries": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "blocked_transactions": {
+          "mean": 74.2,
+          "std_dev": 5.069517,
+          "min": 68.0,
+          "max": 81.0
+        },
+        "stopped_transactions": {
+          "mean": 414.2,
+          "std_dev": 12.153189,
+          "min": 405.0,
+          "max": 435.0
+        },
+        "merchant_review_transactions": {
+          "mean": 5.2,
+          "std_dev": 2.167948,
+          "min": 3.0,
+          "max": 8.0
+        },
+        "revenue_at_risk": {
+          "mean": 15425538.29,
+          "std_dev": 582482.657853,
+          "min": 14780543.1,
+          "max": 16250634.61
+        },
+        "eligible_revenue": {
+          "mean": 14677729.838,
+          "std_dev": 670433.003422,
+          "min": 13818789.19,
+          "max": 15612003.88
+        },
+        "recovered_revenue": {
+          "mean": 11120244.312,
+          "std_dev": 716268.086653,
+          "min": 10494668.23,
+          "max": 12316610.57
+        },
+        "recovery_rate": {
+          "mean": 0.547006,
+          "std_dev": 0.011302,
+          "min": 0.52897,
+          "max": 0.555796
+        },
+        "revenue_recovery_efficiency": {
+          "mean": 0.757253,
+          "std_dev": 0.019863,
+          "min": 0.73562,
+          "max": 0.788919
+        },
+        "average_recovery_attempts": {
+          "mean": 0.6448,
+          "std_dev": 0.019967,
+          "min": 0.612,
+          "max": 0.664
+        },
+        "total_attempts": {
+          "mean": 644.8,
+          "std_dev": 19.967474,
+          "min": 612.0,
+          "max": 664.0
+        },
+        "total_friction_cost": {
+          "mean": 1185.2,
+          "std_dev": 49.866823,
+          "min": 1106.0,
+          "max": 1234.0
+        },
+        "total_action_cost": {
+          "mean": 460.0,
+          "std_dev": 16.427873,
+          "min": 433.5,
+          "max": 476.0
+        },
+        "total_risk_cost": {
+          "mean": 69416.90862,
+          "std_dev": 4455.708753,
+          "min": 64141.7211,
+          "max": 73709.074
+        },
+        "safety_violation_count": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "safety_violation_rate": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "net_recovery_value": {
+          "mean": 11049182.20338,
+          "std_dev": 712871.761448,
+          "min": 10427965.6271,
+          "max": 12241211.496
+        },
+        "average_time_to_recovery_hours": {
+          "mean": 1.52088,
+          "std_dev": 0.119046,
+          "min": 1.3899,
+          "max": 1.646
+        }
+      }
+    },
+    {
+      "strategy_name": "RecoverAI",
+      "seeds": [
+        42,
+        123,
+        456,
+        789,
+        1001
+      ],
+      "dataset_size": 1000,
+      "aggregate_stats": {
+        "total_transactions": {
+          "mean": 1000.0,
+          "std_dev": 0.0,
+          "min": 1000.0,
+          "max": 1000.0
+        },
+        "successful_recoveries": {
+          "mean": 296.0,
+          "std_dev": 13.56466,
+          "min": 282.0,
+          "max": 316.0
+        },
+        "failed_recoveries": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "blocked_transactions": {
+          "mean": 74.2,
+          "std_dev": 5.069517,
+          "min": 68.0,
+          "max": 81.0
+        },
+        "stopped_transactions": {
+          "mean": 624.6,
+          "std_dev": 13.464769,
+          "min": 603.0,
+          "max": 640.0
+        },
+        "merchant_review_transactions": {
+          "mean": 5.2,
+          "std_dev": 2.167948,
+          "min": 3.0,
+          "max": 8.0
+        },
+        "revenue_at_risk": {
+          "mean": 15425538.29,
+          "std_dev": 582482.657853,
+          "min": 14780543.1,
+          "max": 16250634.61
+        },
+        "eligible_revenue": {
+          "mean": 14677729.838,
+          "std_dev": 670433.003422,
+          "min": 13818789.19,
+          "max": 15612003.88
+        },
+        "recovered_revenue": {
+          "mean": 8939671.748,
+          "std_dev": 818360.2323,
+          "min": 8235514.64,
+          "max": 10312453.11
+        },
+        "recovery_rate": {
+          "mean": 0.319705,
+          "std_dev": 0.014053,
+          "min": 0.306855,
+          "max": 0.341253
+        },
+        "revenue_recovery_efficiency": {
+          "mean": 0.608204,
+          "std_dev": 0.029985,
+          "min": 0.588779,
+          "max": 0.660546
+        },
+        "average_recovery_attempts": {
+          "mean": 0.3588,
+          "std_dev": 0.02123,
+          "min": 0.334,
+          "max": 0.389
+        },
+        "total_attempts": {
+          "mean": 358.8,
+          "std_dev": 21.229696,
+          "min": 334.0,
+          "max": 389.0
+        },
+        "total_friction_cost": {
+          "mean": 726.0,
+          "std_dev": 39.147158,
+          "min": 688.0,
+          "max": 787.0
+        },
+        "total_action_cost": {
+          "mean": 273.7,
+          "std_dev": 15.069008,
+          "min": 259.5,
+          "max": 297.5
+        },
+        "total_risk_cost": {
+          "mean": 69416.90862,
+          "std_dev": 4455.708753,
+          "min": 64141.7211,
+          "max": 73709.074
+        },
+        "safety_violation_count": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "safety_violation_rate": {
+          "mean": 0.0,
+          "std_dev": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "net_recovery_value": {
+          "mean": 8869255.13938,
+          "std_dev": 814905.618133,
+          "min": 8169475.5371,
+          "max": 10237659.536
+        },
+        "average_time_to_recovery_hours": {
+          "mean": 1.6996,
+          "std_dev": 0.114298,
+          "min": 1.5415,
+          "max": 1.7977
+        }
+      }
+    }
+  ]
+}
