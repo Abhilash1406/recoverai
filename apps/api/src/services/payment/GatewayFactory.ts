@@ -8,12 +8,24 @@ export function getPaymentGateway(explicitAdapter?: PaymentGatewayAdapter): Paym
     return explicitAdapter;
   }
 
+  const isTest = process.env['NODE_ENV'] === 'test';
+  const liveOptIn = process.env['RUN_LIVE_RAZORPAY_TESTS'] === 'true' || process.env['RUN_RAZORPAY_TESTS'] === 'true';
+
+  // In test environment, default to MockPaymentGateway unless explicitly opted into live tests
+  if (isTest && !liveOptIn) {
+    return new MockPaymentGateway();
+  }
+
+  const gatewayMode = process.env['GATEWAY_MODE'] || config.gatewayMode;
+  const keyId = process.env['RAZORPAY_KEY_ID'] || config.razorpayKeyId;
+  const keySecret = process.env['RAZORPAY_KEY_SECRET'] || config.razorpayKeySecret;
+
   if (
-    config.gatewayMode === 'RAZORPAY_SANDBOX' &&
-    config.razorpayKeyId &&
-    config.razorpayKeySecret
+    gatewayMode === 'RAZORPAY_SANDBOX' &&
+    keyId &&
+    keySecret
   ) {
-    return new RazorpaySandboxAdapter();
+    return new RazorpaySandboxAdapter(keyId, keySecret);
   }
 
   return new MockPaymentGateway();
