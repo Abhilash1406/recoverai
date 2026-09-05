@@ -5,38 +5,44 @@ import { dataStore } from '../../services/store.js';
 const recoveryRouter = Router();
 
 // GET /api/v1/recovery/cases
-recoveryRouter.get('/cases', (_req, res) => {
-  const cases = dataStore.getAllCases();
-  res.json({
-    success: true,
-    data: cases,
-    meta: { total: cases.length },
-  });
-  return;
+recoveryRouter.get('/cases', async (_req, res, next) => {
+  try {
+    const cases = await dataStore.getAllCases();
+    res.json({
+      success: true,
+      data: cases,
+      meta: { total: cases.length },
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // GET /api/v1/recovery/cases/:id
-recoveryRouter.get('/cases/:id', (req, res) => {
-  const recCase = dataStore.getCase(req.params.id);
-  if (!recCase) {
-    res.status(404).json({
-      success: false,
-      error: { message: `Recovery case ${req.params.id} not found` },
-    });
-    return;
-  }
-  const auditEvents = dataStore.getAuditEventsByCaseId(req.params.id);
-  const decision = recCase.currentDecisionId ? dataStore.getDecision(recCase.currentDecisionId) : undefined;
+recoveryRouter.get('/cases/:id', async (req, res, next) => {
+  try {
+    const recCase = await dataStore.getCase(req.params.id);
+    if (!recCase) {
+      res.status(404).json({
+        success: false,
+        error: { message: `Recovery case ${req.params.id} not found` },
+      });
+      return;
+    }
+    const auditEvents = await dataStore.getAuditEventsByCaseId(req.params.id);
+    const decision = recCase.currentDecisionId ? await dataStore.getDecision(recCase.currentDecisionId) : undefined;
 
-  res.json({
-    success: true,
-    data: {
-      case: recCase,
-      decision,
-      auditEvents,
-    },
-  });
-  return;
+    res.json({
+      success: true,
+      data: {
+        case: recCase,
+        decision,
+        auditEvents,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // POST /api/v1/recovery/cases/:id/analyze
@@ -81,13 +87,16 @@ recoveryRouter.post('/cases/:id/stop', async (req, res, next) => {
 });
 
 // GET /api/v1/recovery/cases/:id/audit
-recoveryRouter.get('/cases/:id/audit', (req, res) => {
-  const auditEvents = dataStore.getAuditEventsByCaseId(req.params.id);
-  res.json({
-    success: true,
-    data: auditEvents,
-  });
-  return;
+recoveryRouter.get('/cases/:id/audit', async (req, res, next) => {
+  try {
+    const auditEvents = await dataStore.getAuditEventsByCaseId(req.params.id);
+    res.json({
+      success: true,
+      data: auditEvents,
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 export default recoveryRouter;

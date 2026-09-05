@@ -14,8 +14,8 @@ import {
 describe('Phase 4.5 Safety Boundary Hardening Tests', () => {
   let orchestrator: RecoveryOrchestrator;
 
-  beforeEach(() => {
-    dataStore.clear();
+  beforeEach(async () => {
+    await dataStore.clear();
     orchestrator = new RecoveryOrchestrator();
   });
 
@@ -35,12 +35,12 @@ describe('Phase 4.5 Safety Boundary Hardening Tests', () => {
     const recCase = await orchestrator.createCase(txn);
     recCase.customerOptedOut = true;
     recCase.selectedAction = RecoveryAction.RETRY;
-    dataStore.saveCase(recCase);
+    await dataStore.saveCase(recCase);
 
     const resultCase = await orchestrator.executeAction(recCase.id);
 
     expect(resultCase.state).toBe(RecoveryCaseState.STOPPED);
-    const auditEvents = dataStore.getAuditEventsByCaseId(recCase.id);
+    const auditEvents = await dataStore.getAuditEventsByCaseId(recCase.id);
     const optOutEvt = auditEvents.find((e) => e.eventType === AuditEventType.CUSTOMER_OPTED_OUT);
     expect(optOutEvt).toBeDefined();
     expect(optOutEvt?.reason).toContain('Customer opted out');
@@ -64,13 +64,13 @@ describe('Phase 4.5 Safety Boundary Hardening Tests', () => {
     const recCase = await orchestrator.createCase(txn);
     recCase.riskScore = 0.85;
     recCase.selectedAction = RecoveryAction.RETRY;
-    dataStore.saveCase(recCase);
+    await dataStore.saveCase(recCase);
 
     const resultCase = await orchestrator.executeAction(recCase.id);
 
     expect(resultCase.state).toBe(RecoveryCaseState.MERCHANT_REVIEW);
     expect(resultCase.selectedAction).toBe(RecoveryAction.MERCHANT_REVIEW);
-    const auditEvents = dataStore.getAuditEventsByCaseId(recCase.id);
+    const auditEvents = await dataStore.getAuditEventsByCaseId(recCase.id);
     const reviewEvt = auditEvents.find((e) => e.eventType === AuditEventType.MERCHANT_REVIEW_REQUIRED);
     expect(reviewEvt).toBeDefined();
   });
@@ -108,8 +108,8 @@ describe('Phase 4.5 Safety Boundary Hardening Tests', () => {
     expect(secondRun.attemptCount).toBe(1);
   });
 
-  it('handles zero-state analytics safely without NaN or divide-by-zero errors', () => {
-    const summary = dataStore.getAnalyticsSummary();
+  it('handles zero-state analytics safely without NaN or divide-by-zero errors', async () => {
+    const summary = await dataStore.getAnalyticsSummary();
     expect(summary.totalCases).toBe(0);
     expect(summary.totalRevenueAtRisk).toBe(0);
     expect(summary.totalRecoveredRevenue).toBe(0);

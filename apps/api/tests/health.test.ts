@@ -14,6 +14,8 @@ describe('GET /api/v1/health', () => {
     expect(res.body.status).toBe('healthy');
     expect(res.body.version).toBeDefined();
     expect(res.body.timestamp).toBeDefined();
+    expect(res.body.persistenceMode).toBeDefined();
+    expect(res.body.mongoConnected).toBeDefined();
   });
 
   it('returns JSON content type', async () => {

@@ -8,7 +8,7 @@ const experimentsRouter = Router();
 // POST /api/v1/experiments/demo
 experimentsRouter.post('/demo', async (_req, res, next) => {
   try {
-    dataStore.clear();
+    await dataStore.clear();
 
     const sampleFailures = [
       { cat: FailureCategory.INSUFFICIENT_FUNDS, code: 'insufficient_funds', amount: 49900, method: 'upi', dev: false, loc: false },
@@ -52,16 +52,19 @@ experimentsRouter.post('/demo', async (_req, res, next) => {
       
       if (custId === 'cust_4') {
         newCase.customerOptedOut = true;
-        dataStore.saveCase(newCase);
+        await dataStore.saveCase(newCase);
       }
 
       await recoveryOrchestrator.analyzeCase(newCase.id);
       await recoveryOrchestrator.executeAction(newCase.id, `idem_demo_${newCase.id}`);
 
-      processedCases.push(dataStore.getCase(newCase.id));
+      const savedCase = await dataStore.getCase(newCase.id);
+      if (savedCase) {
+        processedCases.push(savedCase);
+      }
     }
 
-    const summary = dataStore.getAnalyticsSummary();
+    const summary = await dataStore.getAnalyticsSummary();
 
     res.json({
       success: true,

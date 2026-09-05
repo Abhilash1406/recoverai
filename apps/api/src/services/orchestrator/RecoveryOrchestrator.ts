@@ -15,7 +15,8 @@ import {
 import { evaluateActions, ScoredAction } from '@recoverai/decision-engine';
 import { evaluatePolicy, HIGH_RISK_THRESHOLD, MAX_AUTOMATIC_ACTIONS } from '@recoverai/policy-engine';
 import { dataStore } from '../store.js';
-import { RazorpaySandboxAdapter } from '../payment/RazorpaySandboxAdapter.js';
+import { PaymentGatewayAdapter } from '../payment/PaymentGatewayAdapter.js';
+import { getPaymentGateway } from '../payment/GatewayFactory.js';
 import { notificationService } from '../notification/NotificationService.js';
 import { geminiAgentService } from '../ai/GeminiAgent.js';
 
@@ -32,21 +33,21 @@ export interface ProcessCaseResult {
 }
 
 export class RecoveryOrchestrator {
-  private paymentGateway: RazorpaySandboxAdapter;
+  private paymentGateway: PaymentGatewayAdapter;
 
-  constructor() {
-    this.paymentGateway = new RazorpaySandboxAdapter();
+  constructor(paymentGateway?: PaymentGatewayAdapter) {
+    this.paymentGateway = getPaymentGateway(paymentGateway);
   }
 
   public async createCase(txn: Transaction): Promise<RecoveryCase> {
-    dataStore.saveTransaction(txn);
+    await dataStore.saveTransaction(txn);
 
-    const customer = dataStore.getCustomer(txn.customerId) || {
+    const customer = (await dataStore.getCustomer(txn.customerId)) || {
       customerId: txn.customerId,
       merchantId: txn.merchantId,
       optedOut: false,
     };
-    dataStore.saveCustomer(customer);
+    await dataStore.saveCustomer(customer);
 
     const caseId = `case_${txn.id}`;
     const newCase: RecoveryCase = {
@@ -67,9 +68,9 @@ export class RecoveryOrchestrator {
       updatedAt: new Date().toISOString(),
     };
 
-    dataStore.saveCase(newCase);
+    await dataStore.saveCase(newCase);
 
-    dataStore.addAuditEvent({
+    await dataStore.addAuditEvent({
       id: `evt_create_${caseId}_${Date.now()}`,
       caseId,
       transactionId: txn.id,
@@ -84,19 +85,19 @@ export class RecoveryOrchestrator {
   }
 
   public async analyzeCase(caseId: string): Promise<ProcessCaseResult> {
-    const recCase = dataStore.getCase(caseId);
+    const recCase = await dataStore.getCase(caseId);
     if (!recCase) {
       throw new Error(`RecoveryCase ${caseId} not found.`);
     }
 
-    const txn = dataStore.getTransaction(recCase.transactionId);
+    const txn = await dataStore.getTransaction(recCase.transactionId);
     if (!txn) {
       throw new Error(`Transaction ${recCase.transactionId} not found.`);
     }
 
     recCase.state = RecoveryCaseState.ANALYZING;
     recCase.updatedAt = new Date().toISOString();
-    dataStore.saveCase(recCase);
+    await dataStore.saveCase(recCase);
 
     let riskScore = 0.15;
     if (txn.failureCategory === FailureCategory.FRAUD_SUSPECTED) riskScore = 0.85;
@@ -126,7 +127,7 @@ export class RecoveryOrchestrator {
       assessedAt: new Date().toISOString(),
     };
 
-    dataStore.addAuditEvent({
+    await dataStore.addAuditEvent({
       id: `evt_risk_${caseId}_${Date.now()}`,
       caseId,
       transactionId: txn.id,
@@ -154,9 +155,9 @@ export class RecoveryOrchestrator {
     });
 
     const finalDecision = decisionResult.decision;
-    dataStore.saveDecision(finalDecision);
+    await dataStore.saveDecision(finalDecision);
 
-    dataStore.addAuditEvent({
+    await dataStore.addAuditEvent({
       id: `evt_rank_${caseId}_${Date.now()}`,
       caseId,
       transactionId: txn.id,
@@ -168,7 +169,7 @@ export class RecoveryOrchestrator {
     });
 
     if (policyEval.result === PolicyResult.BLOCK) {
-      dataStore.addAuditEvent({
+      await dataStore.addAuditEvent({
         id: `evt_pol_${caseId}_${Date.now()}`,
         caseId,
         transactionId: txn.id,
@@ -193,9 +194,9 @@ export class RecoveryOrchestrator {
     recCase.selectedAction = decisionResult.topAction.action;
     recCase.explanation = explanation.summary;
     recCase.updatedAt = new Date().toISOString();
-    dataStore.saveCase(recCase);
+    await dataStore.saveCase(recCase);
 
-    const auditEvents = dataStore.getAuditEventsByCaseId(caseId);
+    const auditEvents = await dataStore.getAuditEventsByCaseId(caseId);
 
     return {
       recoveryCase: recCase,
@@ -212,14 +213,14 @@ export class RecoveryOrchestrator {
 
   public async executeAction(caseId: string, idempotencyKey?: string): Promise<RecoveryCase> {
     if (idempotencyKey) {
-      const isFresh = dataStore.checkAndSetIdempotency(idempotencyKey);
+      const isFresh = await dataStore.checkAndSetIdempotency(idempotencyKey);
       if (!isFresh) {
-        const existing = dataStore.getCase(caseId);
+        const existing = await dataStore.getCase(caseId);
         if (existing) return existing;
       }
     }
 
-    const recCase = dataStore.getCase(caseId);
+    const recCase = await dataStore.getCase(caseId);
     if (!recCase) {
       throw new Error(`RecoveryCase ${caseId} not found.`);
     }
@@ -231,9 +232,9 @@ export class RecoveryOrchestrator {
     if (recCase.customerOptedOut) {
       recCase.state = RecoveryCaseState.STOPPED;
       recCase.updatedAt = new Date().toISOString();
-      dataStore.saveCase(recCase);
+      await dataStore.saveCase(recCase);
 
-      dataStore.addAuditEvent({
+      await dataStore.addAuditEvent({
         id: `evt_optout_${caseId}_${Date.now()}`,
         caseId,
         transactionId: recCase.transactionId,
@@ -242,7 +243,7 @@ export class RecoveryOrchestrator {
         timestamp: new Date().toISOString(),
         reason: 'Recovery action cancelled at boundary: Customer opted out of communications.',
       });
-      dataStore.addAuditEvent({
+      await dataStore.addAuditEvent({
         id: `evt_stop_opt_${caseId}_${Date.now()}`,
         caseId,
         transactionId: recCase.transactionId,
@@ -266,9 +267,9 @@ export class RecoveryOrchestrator {
       recCase.state = RecoveryCaseState.MERCHANT_REVIEW;
       recCase.selectedAction = RecoveryAction.MERCHANT_REVIEW;
       recCase.updatedAt = new Date().toISOString();
-      dataStore.saveCase(recCase);
+      await dataStore.saveCase(recCase);
 
-      dataStore.addAuditEvent({
+      await dataStore.addAuditEvent({
         id: `evt_mreview_gate_${caseId}_${Date.now()}`,
         caseId,
         transactionId: recCase.transactionId,
@@ -285,9 +286,9 @@ export class RecoveryOrchestrator {
     if (recCase.amount <= 0) {
       recCase.state = RecoveryCaseState.STOPPED;
       recCase.updatedAt = new Date().toISOString();
-      dataStore.saveCase(recCase);
+      await dataStore.saveCase(recCase);
 
-      dataStore.addAuditEvent({
+      await dataStore.addAuditEvent({
         id: `evt_stop_invalid_amt_${caseId}_${Date.now()}`,
         caseId,
         transactionId: recCase.transactionId,
@@ -304,9 +305,9 @@ export class RecoveryOrchestrator {
     if (action === RecoveryAction.STOP) {
       recCase.state = RecoveryCaseState.STOPPED;
       recCase.updatedAt = new Date().toISOString();
-      dataStore.saveCase(recCase);
+      await dataStore.saveCase(recCase);
 
-      dataStore.addAuditEvent({
+      await dataStore.addAuditEvent({
         id: `evt_stop_${caseId}_${Date.now()}`,
         caseId,
         transactionId: recCase.transactionId,
@@ -323,9 +324,9 @@ export class RecoveryOrchestrator {
     if (recCase.attemptCount >= MAX_AUTOMATIC_ACTIONS && action !== RecoveryAction.MERCHANT_REVIEW) {
       recCase.state = RecoveryCaseState.STOPPED;
       recCase.updatedAt = new Date().toISOString();
-      dataStore.saveCase(recCase);
+      await dataStore.saveCase(recCase);
 
-      dataStore.addAuditEvent({
+      await dataStore.addAuditEvent({
         id: `evt_stop_maxauto_${caseId}_${Date.now()}`,
         caseId,
         transactionId: recCase.transactionId,
@@ -341,9 +342,9 @@ export class RecoveryOrchestrator {
     recCase.state = RecoveryCaseState.ACTION_PENDING;
     recCase.attemptCount += 1;
     recCase.updatedAt = new Date().toISOString();
-    dataStore.saveCase(recCase);
+    await dataStore.saveCase(recCase);
 
-    dataStore.addAuditEvent({
+    await dataStore.addAuditEvent({
       id: `evt_sel_${caseId}_${Date.now()}`,
       caseId,
       transactionId: recCase.transactionId,
@@ -359,9 +360,9 @@ export class RecoveryOrchestrator {
       if (result.status === 'captured') {
         recCase.state = RecoveryCaseState.RECOVERED;
         recCase.resolvedAt = new Date().toISOString();
-        dataStore.saveCase(recCase);
+        await dataStore.saveCase(recCase);
 
-        dataStore.addAuditEvent({
+        await dataStore.addAuditEvent({
           id: `evt_exec_${caseId}_${Date.now()}`,
           caseId,
           transactionId: recCase.transactionId,
@@ -373,9 +374,9 @@ export class RecoveryOrchestrator {
         });
       } else {
         recCase.state = RecoveryCaseState.FAILED;
-        dataStore.saveCase(recCase);
+        await dataStore.saveCase(recCase);
 
-        dataStore.addAuditEvent({
+        await dataStore.addAuditEvent({
           id: `evt_exec_fail_${caseId}_${Date.now()}`,
           caseId,
           transactionId: recCase.transactionId,
@@ -404,9 +405,9 @@ export class RecoveryOrchestrator {
 
       if (notif.status === 'BLOCKED') {
         recCase.state = RecoveryCaseState.STOPPED;
-        dataStore.saveCase(recCase);
+        await dataStore.saveCase(recCase);
 
-        dataStore.addAuditEvent({
+        await dataStore.addAuditEvent({
           id: `evt_optout_${caseId}_${Date.now()}`,
           caseId,
           transactionId: recCase.transactionId,
@@ -417,9 +418,9 @@ export class RecoveryOrchestrator {
         });
       } else {
         recCase.state = RecoveryCaseState.ACTION_EXECUTED;
-        dataStore.saveCase(recCase);
+        await dataStore.saveCase(recCase);
 
-        dataStore.addAuditEvent({
+        await dataStore.addAuditEvent({
           id: `evt_exec_link_${caseId}_${Date.now()}`,
           caseId,
           transactionId: recCase.transactionId,
@@ -432,9 +433,9 @@ export class RecoveryOrchestrator {
       }
     } else if (action === RecoveryAction.MERCHANT_REVIEW) {
       recCase.state = RecoveryCaseState.MERCHANT_REVIEW;
-      dataStore.saveCase(recCase);
+      await dataStore.saveCase(recCase);
 
-      dataStore.addAuditEvent({
+      await dataStore.addAuditEvent({
         id: `evt_mreview_${caseId}_${Date.now()}`,
         caseId,
         transactionId: recCase.transactionId,
@@ -446,18 +447,18 @@ export class RecoveryOrchestrator {
     }
 
     recCase.updatedAt = new Date().toISOString();
-    return dataStore.saveCase(recCase);
+    return await dataStore.saveCase(recCase);
   }
 
   public async stopCase(caseId: string, reason: string): Promise<RecoveryCase> {
-    const recCase = dataStore.getCase(caseId);
+    const recCase = await dataStore.getCase(caseId);
     if (!recCase) throw new Error(`RecoveryCase ${caseId} not found.`);
 
     recCase.state = RecoveryCaseState.STOPPED;
     recCase.updatedAt = new Date().toISOString();
-    dataStore.saveCase(recCase);
+    await dataStore.saveCase(recCase);
 
-    dataStore.addAuditEvent({
+    await dataStore.addAuditEvent({
       id: `evt_stop_man_${caseId}_${Date.now()}`,
       caseId,
       transactionId: recCase.transactionId,

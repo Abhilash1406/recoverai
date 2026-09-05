@@ -24,10 +24,14 @@ export const config = {
   port: parseInt(optionalEnv('PORT', '5000'), 10),
   clientUrl: optionalEnv('CLIENT_URL', 'http://localhost:5173'),
 
-  // These will be validated in later phases when services are integrated
-  // mongodbUri: process.env['MONGODB_URI'],
-  // razorpayKeyId: process.env['RAZORPAY_KEY_ID'],
-  // geminiApiKey: process.env['GEMINI_API_KEY'],
+  persistenceMode: (optionalEnv('PERSISTENCE_MODE', 'memory').toLowerCase() === 'mongodb' ? 'mongodb' : 'memory') as 'memory' | 'mongodb',
+  mongodbUri: optionalEnv('MONGODB_URI', 'mongodb://localhost:27017/recoverai'),
+
+  // Phase 5B Razorpay Sandbox
+  razorpayKeyId: optionalEnv('RAZORPAY_KEY_ID', ''),
+  razorpayKeySecret: optionalEnv('RAZORPAY_KEY_SECRET', ''),
+  razorpayWebhookSecret: optionalEnv('RAZORPAY_WEBHOOK_SECRET', ''),
+  gatewayMode: (optionalEnv('GATEWAY_MODE', '').toUpperCase() === 'RAZORPAY_SANDBOX' || (Boolean(process.env['RAZORPAY_KEY_ID'] && process.env['RAZORPAY_KEY_SECRET']) && optionalEnv('GATEWAY_MODE', '').toUpperCase() !== 'MOCK') ? 'RAZORPAY_SANDBOX' : 'MOCK_DEMO') as 'MOCK_DEMO' | 'RAZORPAY_SANDBOX',
 } as const;
 
 export type Config = typeof config;

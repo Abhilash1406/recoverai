@@ -31,7 +31,7 @@ export class NotificationService {
         failureReason: 'Customer has explicitly opted out of recovery communications.',
         createdAt: new Date().toISOString(),
       };
-      dataStore.saveNotification(blockedRecord);
+      await dataStore.saveNotification(blockedRecord);
       return blockedRecord;
     }
 
@@ -48,7 +48,7 @@ export class NotificationService {
       sentAt: new Date().toISOString(),
     };
 
-    dataStore.saveNotification(record);
+    await dataStore.saveNotification(record);
     return record;
   }
 }
